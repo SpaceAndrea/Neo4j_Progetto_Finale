@@ -1,6 +1,20 @@
 import os
 from neo4j import GraphDatabase
 
+def carica_dati_iniziali(driver):
+    ## idealmente potremmo realizzare un file con tutti i dati
+
+    summary = driver.execute_query(
+        "CREATE (:Person {name: $name})",
+        name="Flavio",
+        database_="neo4j",
+    ).summary
+
+    # print("Created {nodes_created} nodes in {time} ms.".format(
+    #     nodes_created=summary.counters.nodes_created,
+    #     time=summary.result_available_after
+    # ))
+
 if __name__ == '__main__':
 
     while True:
@@ -24,12 +38,18 @@ if __name__ == '__main__':
                 # driver.verify_connectivity()
 
             driver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
-            print('Connesione a Neo4j effettuata!')
+            print('Connesione a Neo4j effettuata')
+
+            ## carica i dati iniziali
+            carica_dati_iniziali((driver))
+            print('Caricati i dati iniziali')
+            input('\nPremi invio per continuare...')
+
             break
 
         except:
-            print('\nImpossibile effetturare la connessione, riprovare')
-            input('Premi invio per continuare...')
+            print('Impossibile effetturare la connessione, riprovare')
+            input('\nPremi invio per continuare...')
 
     while True:
         ## pulisce il terminale
