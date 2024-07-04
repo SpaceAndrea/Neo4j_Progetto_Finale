@@ -1,6 +1,5 @@
 # Neo4j_Progetto_Finale
 Progetto per esame Neo4j
-# mongoDB_project
 
 <div align="center">
   <img src="https://img.shields.io/badge/Neo4j-018bff?style=for-the-badge&logo=neo4j&logoColor=white">
