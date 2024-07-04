@@ -2,28 +2,41 @@ import os
 from neo4j import GraphDatabase
 
 if __name__ == '__main__':
-    URI = input('Inserire l\'URI del database (lascia vuoto per inserire "neo4j+s://29b76056.databases.neo4j.io:7687"): ').strip()
-    if URI == '':
-        URI = "neo4j+s://29b76056.databases.neo4j.io:7687"
-
-    USERNAME = input('Inserire lo username (lascia vuoto per inserire "neo4j"): ').strip()
-    if USERNAME == '':
-        USERNAME = 'neo4j'
-
-    PASSWORD = input('Inserire la password: ').strip()
-
-    # with GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD)) as driver:
-        # driver.verify_connectivity()
-
-    driver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
-    print('Connesione a Neo4j effettuata!')
 
     while True:
         ## pulisce il terminale
         os.system('cls' if os.name == 'nt' else 'clear')
 
-        print('''
-Scegli un opzione:
+        URI = input('Inserire l\'URI del database (lascia vuoto per inserire "neo4j+s://29b76056.databases.neo4j.io:7687"): ').strip()
+        if URI == '':
+            URI = "neo4j+s://29b76056.databases.neo4j.io:7687"
+
+        USERNAME = input('Inserire lo username (lascia vuoto per inserire "neo4j"): ').strip()
+        if USERNAME == '':
+            USERNAME = 'neo4j'
+
+        PASSWORD = input('Inserire la password (lascia vuoto per inserire "ACVoeucPiAGAB55HVjcRMKW8cnALwVx2E4Qj8jWDJHI": ').strip()
+        if PASSWORD == '':
+            PASSWORD = 'ACVoeucPiAGAB55HVjcRMKW8cnALwVx2E4Qj8jWDJHI'
+
+        try:
+            # with GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD)) as driver:
+                # driver.verify_connectivity()
+
+            driver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
+            print('Connesione a Neo4j effettuata!')
+            break
+
+        except:
+            print('\nImpossibile effetturare la connessione, riprovare')
+            input('Premi invio per continuare...')
+
+    while True:
+        ## pulisce il terminale
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        print('''Scegli un opzione:
+
 1. Localizza una persona in base alla data
 2. Localizza più persone in base ad una cella telefonica 
 3. Localizza più persone in base alla vicinanza ad un luogo
