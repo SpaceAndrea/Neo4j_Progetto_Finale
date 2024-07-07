@@ -8,16 +8,15 @@ Progetto per esame Neo4j
   <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white">
 </div>
 
-TUTTA LA PARTE SOTTO E' DA MODIFICARE.
-
 ---
 
-
 <div align="center">
-  <img src="https://github.com/TongoPatongo/mongoDB_project/assets/145685548/f52bbf32-9b28-48f8-8674-f1f55136fb45" alt="MongoDB Logo" />
+  <img src="https://github.com/SpaceAndrea/Neo4j_Progetto_Finale/assets/145685548/a2c1c3eb-4dad-47e6-80a0-a5e18234b406" alt="Neo4j Logo" />
 </div>
 
 ---
+
+TUTTA LA PARTE SOTTO E' DA MODIFICARE.
 
 Neo4j Project è un applicazione che consente l'acquisto di biglietti per concerti. <br>
 Con MongoDB Project, è possibile: <b>
