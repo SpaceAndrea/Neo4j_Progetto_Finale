@@ -7,16 +7,17 @@ def carica_dati_iniziali(driver, file_path):
     #Dato che il file è stato creato (tramite il modulo raccolta_dati.py)
     #leggo quei dati dal file json
     with open(file_path, 'r') as file:
-        persona = json.load(file)
+        persone = json.loads(file.read())
 
           
     with driver.session() as session:
         # Crea un nodo Person utilizzando i dati dal JSON
-        session.run(
-            "CREATE (:Person {nome: $nome, cognome: $cognome, età: $età, data_di_nascita: $data_di_nascita, via: $via, città: $città, cap: $cap, email: $email, telefono: $telefono})",
-            nome=persona['nome'], cognome=persona['cognome'], età=persona['età'], data_di_nascita=persona['data_di_nascita'],
-            via=persona['via'], città=persona['città'], cap=persona['cap'], email=persona['email'], telefono=persona['telefono']
-        )
+        for persona in persone:
+            session.run(
+                "CREATE (:Person {nome: $nome, cognome: $cognome, età: $età, data_di_nascita: $data_di_nascita, via: $via, città: $città, cap: $cap, email: $email, telefono: $telefono})",
+                nome=persona['nome'], cognome=persona['cognome'], età=persona['eta'], data_di_nascita=persona['data_di_nascita'],
+                via=persona['via'], città=persona['citta'], cap=persona['cap'], email=persona['email'], telefono=persona['telefono']
+            )
 
      # Esempio di creazione di una cella e una SIM e delle loro relazioni
         # Questi dati potrebbero venire da un altro file o input dell'utente
@@ -84,7 +85,6 @@ if __name__ == '__main__':
             print('Connesione a Neo4j effettuata')
 
             ## carica i dati iniziali
-            carica_dati_iniziali((driver, 'dati_persona.json'))
             print('Caricati i dati iniziali')
             input('\nPremi invio per continuare...')
 
@@ -93,6 +93,8 @@ if __name__ == '__main__':
         except:
             print('Impossibile effetturare la connessione, riprovare')
             input('\nPremi invio per continuare...')
+
+    carica_dati_iniziali(driver, 'dati_persona.json')
 
     while True:
         ## pulisce il terminale
