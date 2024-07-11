@@ -1,19 +1,65 @@
 import os
 from neo4j import GraphDatabase
+import json
 
-def carica_dati_iniziali(driver):
+
+def carica_dati_iniziali(driver, file_path):
     ## idealmente potremmo realizzare un file con tutti i dati
+    # Dato che il file è stato creato (tramite il modulo raccolta_dati.py)
+    # leggo quei dati dal file json
+    with open(file_path, 'r') as file:
+        persone = json.loads(file.read())
 
-    summary = driver.execute_query(
-        "CREATE (:Person {name: $name})",
-        name="Flavio",
-        database_="neo4j",
-    ).summary
+    with driver.session() as session:
+        # Crea un nodo Person utilizzando i dati dal JSON
+        for persona in persone:
+            session.run(
+                "CREATE (:Person {nome: $nome, cognome: $cognome, età: $età, data_di_nascita: $data_di_nascita, via: $via, città: $città, cap: $cap, email: $email, telefono: $telefono})",
+                nome=persona['nome'], cognome=persona['cognome'], età=persona['eta'],
+                data_di_nascita=persona['data_di_nascita'],
+                via=persona['via'], città=persona['citta'], cap=persona['cap'], email=persona['email'],
+                telefono=persona['telefono']
+            )
 
-    # print("Created {nodes_created} nodes in {time} ms.".format(
-    #     nodes_created=summary.counters.nodes_created,
-    #     time=summary.result_available_after
-    # ))
+        # Esempio di creazione di una cella e una SIM e delle loro relazioni
+        # Questi dati potrebbero venire da un altro file o input dell'utente
+        cell_id = "1234"
+        location = "34.3N, 56.4W"
+        sim_number = persona['telefono']
+        date = "2022-10-04"
+        time = "12:33:00"
+
+        # Crea un nodo Cell
+        session.run(
+            "CREATE (:Cell {id: $id, location: $location})",
+            id=cell_id, location=location
+        )
+
+        # Crea un nodo SIM
+        session.run(
+            "CREATE (:SIM {number: $number})",
+            number=sim_number
+        )
+
+        # Crea la relazione OWNS tra Person e SIM
+        session.run(
+            """
+            MATCH (p:Person {telefono: $telefono}), (s:SIM {number: $number})
+            CREATE (p)-[:OWNS]->(s)
+            """,
+            telefono=persona['telefono'], number=sim_number
+        )
+
+        # Crea la relazione CONNECTED_TO tra SIM e Cell
+        session.run(
+            """
+            MATCH (s:SIM {number: $number}), (c:Cell {id: $cell_id})
+            CREATE (s)-[:CONNECTED_TO {date: $date, time: $time}]->(c)
+            """,
+            number=sim_number, cell_id=cell_id, date=date, time=time
+        )
+    print("Dati iniziali caricati nel database Neo4j")
+
 
 if __name__ == '__main__':
 
@@ -21,7 +67,8 @@ if __name__ == '__main__':
         ## pulisce il terminale
         os.system('cls' if os.name == 'nt' else 'clear')
 
-        URI = input('Inserire l\'URI del database (lascia vuoto per inserire "neo4j+s://29b76056.databases.neo4j.io:7687"): ').strip()
+        URI = input(
+            'Inserire l\'URI del database (lascia vuoto per inserire "neo4j+s://29b76056.databases.neo4j.io:7687"): ').strip()
         if URI == '':
             URI = "neo4j+s://29b76056.databases.neo4j.io:7687"
 
@@ -29,19 +76,19 @@ if __name__ == '__main__':
         if USERNAME == '':
             USERNAME = 'neo4j'
 
-        PASSWORD = input('Inserire la password (lascia vuoto per inserire "ACVoeucPiAGAB55HVjcRMKW8cnALwVx2E4Qj8jWDJHI": ').strip()
+        PASSWORD = input(
+            'Inserire la password (lascia vuoto per inserire "ACVoeucPiAGAB55HVjcRMKW8cnALwVx2E4Qj8jWDJHI": ').strip()
         if PASSWORD == '':
             PASSWORD = 'ACVoeucPiAGAB55HVjcRMKW8cnALwVx2E4Qj8jWDJHI'
 
         try:
             # with GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD)) as driver:
-                # driver.verify_connectivity()
+            # driver.verify_connectivity()
 
             driver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
             print('Connesione a Neo4j effettuata')
 
             ## carica i dati iniziali
-            carica_dati_iniziali((driver))
             print('Caricati i dati iniziali')
             input('\nPremi invio per continuare...')
 
@@ -50,6 +97,8 @@ if __name__ == '__main__':
         except:
             print('Impossibile effetturare la connessione, riprovare')
             input('\nPremi invio per continuare...')
+
+    carica_dati_iniziali(driver, 'dati_persona.json')
 
     while True:
         ## pulisce il terminale
