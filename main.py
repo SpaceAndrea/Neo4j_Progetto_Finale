@@ -30,7 +30,7 @@ def carica_dati_iniziali(session, file_path):
         location = "34.3N, 56.4W"
         sim_number = persona['telefono']
         date = "2022-10-04"
-        time = "12:33````:00"
+        time = "12:33:00"
 
         # Crea un nodo Cell
         session.run(
@@ -54,20 +54,20 @@ def carica_dati_iniziali(session, file_path):
         )
 
         # Crea la relazione CONNECTED_TO tra SIM e Cell
-        # session.run(
-        #     """
-        #     MATCH (s:SIM {number: $number}), (c:Cell {id: $cell_id})
-        #     CREATE (s)-[:CONNECTED_TO {date: $date, time: $time}]->(c)
-        #     """,
-        #     number=sim_number, cell_id=cell_id, date=date, time=time
-        # )
         session.run(
             """
             MATCH (s:SIM {number: $number}), (c:Cell {id: $cell_id})
-            CREATE (s)-[:CONNECTED_TO {date: $date}]->(c)
+            CREATE (s)-[:CONNECTED_TO {date: $date, time: $time}]->(c)
             """,
             number=sim_number, cell_id=cell_id, date=date, time=time
         )
+        # session.run(
+        #     """
+        #     MATCH (s:SIM {number: $number}), (c:Cell {id: $cell_id})
+        #     CREATE (s)-[:CONNECTED_TO {date: $date}]->(c)
+        #     """,
+        #     number=sim_number, cell_id=cell_id, date=date, time=time
+        # )
 
     print("Dati iniziali caricati nel database Neo4j")
 
@@ -143,7 +143,7 @@ q. Esci
 
         if scelta == 1:
             nome = input('Inserire il nome della persona: ').strip()
-            cognome = input('Inserire il cognnome della persona: ').strip()
+            cognome = input('Inserire il cognome della persona: ').strip()
 
             ## trova la sim della persona
             result = session.run(
@@ -185,7 +185,33 @@ q. Esci
                     print(f"[{i}] ID: {c['id']}, COORDINATE: {c['location']}")
 
         elif scelta == 2:
-            pass
+            cell_id = input('Inserire l\'ID della cella: ').strip()
+            data = input('Inserire la data (YYYY-MM-DD): ').strip()
+            orario = input('Inserire l\'orario (HH:MM:SS): ').strip()
+
+            result = session.run(
+                """
+                MATCH (p:Person)-[:OWNS]->(s:SIM)-[r:CONNECTED_TO]->(c:Cell)
+                WHERE c.id = $cell_id AND r.date = $data AND r.time = $orario
+                RETURN p.nome AS nome, p.cognome AS cognome, s.number AS numero
+                """,
+                cell_id=cell_id, data=data, orario=orario
+            )
+
+            persone = []
+            for record in result:
+                persone.append({
+                    "nome": record["nome"],
+                    "cognome": record["cognome"],
+                    "numero": record["numero"]
+                })
+
+            if persone:
+                print("\nPersone trovate:")
+                for persona in persone:
+                    print(f"{persona['nome']} {persona['cognome']} (numero: {persona['numero']})")
+            else:
+                print("\nNessun riscontro trovato.")
 
         elif scelta == 3:
             pass
