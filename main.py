@@ -190,5 +190,4 @@ q. Esci
         elif scelta == 3:
             pass
 
-
         input('\nPremi invio per continuare...')
