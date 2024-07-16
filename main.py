@@ -27,7 +27,7 @@ def carica_dati_iniziali(driver, file_path):
         location = "34.3N, 56.4W"
         sim_number = persona['telefono']
         date = "2022-10-04"
-        time = "12:33:00"
+        time = "12:33````:00"
 
         # Crea un nodo Cell
         session.run(
@@ -82,10 +82,8 @@ if __name__ == '__main__':
             PASSWORD = 'ACVoeucPiAGAB55HVjcRMKW8cnALwVx2E4Qj8jWDJHI'
 
         try:
-            # with GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD)) as driver:
-            # driver.verify_connectivity()
-
             driver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
+            driver.verify_connectivity()  ## senza questa funzione anche se la connessione al db non e' avvenuta non dava errore
             print('Connesione a Neo4j effettuata')
 
             ## carica i dati iniziali
