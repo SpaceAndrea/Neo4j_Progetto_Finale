@@ -138,14 +138,18 @@ class CreateDataBase:
             for cella in assigned_cells:
                 start_time = datetime.now() - timedelta(days=random.randint(1, 1000))
                 end_time = start_time + timedelta(hours=random.randint(1, 48))
+                # Formattazione delle date per includere solo ore e minuti
+                start_formatted = start_time.replace(second=0, microsecond=0).isoformat()
+                end_formatted = end_time.replace(second=0, microsecond=0).isoformat()
                 try:
                     tx.run(
                         "MATCH (s:Sim {numero: $numero}), (c:Cella {nome: $nome}) "
                         "CREATE (s)-[:CONNECTED_TO {start: datetime($start), end: datetime($end)}]->(c)",
-                        numero=numero, nome=cella.nome, start=start_time.isoformat(), end=end_time.isoformat()
+                        numero=numero, nome=cella.nome, start=start_formatted, end=end_formatted
                     )
                 except Exception as e:
                     print(f"Error creating relationship for Sim {numero} and Cella {cella.nome}: {e}")
+
 
 
             
@@ -163,9 +167,9 @@ if __name__ == '__main__':
     session = driver.session()
     createDB = CreateDataBase()
     try:
-        # createDB.crea_celle(session)
-        # createDB.crea_persone(session)
-        # createDB.crea_sim(session)
+        createDB.crea_celle(session)
+        createDB.crea_persone(session)
+        createDB.crea_sim(session)
         createDB.crea_relazioni_persona_sim(session)
         createDB.crea_relazioni_sim_cella(session)
     except Exception as e:
