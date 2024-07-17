@@ -98,14 +98,14 @@ class CreateDataBase:
         for luogo in self.luoghi:
             tx.run(
                 "CREATE (:Cella { nome: $nome, location: point({ latitude: $latitude, longitude: $longitude, srid: $srid }) })",
-                nome=luogo.nome, latitude=luogo.latitudine, longitude=luogo.longitudine, srid=srid
+                nome=luogo.nome.lower(), latitude=luogo.latitudine, longitude=luogo.longitudine, srid=srid
         )
             
     def crea_persone(self, tx):
         for persona in self.persone:
             tx.run(
                 "CREATE (:Persona { nome: $nome, cognome: $cognome, eta: $eta })",
-                nome=persona.nome, cognome=persona.cognome, eta=persona.eta
+                nome=persona.nome.lower(), cognome=persona.cognome.lower(), eta=persona.eta
             )
 
     def crea_sim(self, tx):
@@ -127,7 +127,7 @@ class CreateDataBase:
             tx.run(
                 "MATCH (p:Persona {nome: $nome, cognome: $cognome}), (s:Sim {numero: $numero}) "
                 "CREATE (p)-[:OWNS]->(s)",
-                nome=persona.nome, cognome=persona.cognome, numero=sim_numero
+                nome=persona.nome.lower(), cognome=persona.cognome.lower(), numero=sim_numero
             )
             
                 
@@ -145,7 +145,7 @@ class CreateDataBase:
                     tx.run(
                         "MATCH (s:Sim {numero: $numero}), (c:Cella {nome: $nome}) "
                         "CREATE (s)-[:CONNECTED_TO {start: datetime($start), end: datetime($end)}]->(c)",
-                        numero=numero, nome=cella.nome, start=start_formatted, end=end_formatted
+                        numero=numero, nome=cella.nome.lower(), start=start_formatted, end=end_formatted
                     )
                 except Exception as e:
                     print(f"Error creating relationship for Sim {numero} and Cella {cella.nome}: {e}")
@@ -168,9 +168,9 @@ if __name__ == '__main__':
     session = driver.session()
     createDB = CreateDataBase()
     try:
-        createDB.crea_celle(session)
-        createDB.crea_persone(session)
-        createDB.crea_sim(session)
+        # createDB.crea_celle(session)
+        # createDB.crea_persone(session)
+        # createDB.crea_sim(session)
         createDB.crea_relazioni_persona_sim(session)
         createDB.crea_relazioni_sim_cella(session)
     except Exception as e:

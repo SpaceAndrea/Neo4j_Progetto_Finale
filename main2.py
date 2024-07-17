@@ -2,7 +2,8 @@ import os
 from neo4j import GraphDatabase
 from datetime import datetime
 import json
-import neo4j.time
+import time
+
 
 
 def carica_dati_iniziali(session, file_path):
@@ -92,9 +93,7 @@ def create_connection():
 
     except:
         print('Impossibile effetturare la connessione, riprovare')
-    
-    
-        
+       
 def main_menu(session):
     while True:
         ## pulisce il terminale
@@ -128,7 +127,7 @@ q. Esci
             case 1:
                 find_form_person_date(session)
             case 2:
-                pass              
+                find_fomr_IDcella_date(session)              
 
 def format_date(iso_date_str):
     
@@ -137,7 +136,7 @@ def format_date(iso_date_str):
     return dt.strftime("%Y-%m-%d %H:%M")
 
 def neo4j_datetime_to_string(neo4j_dt):
-    # Converti l'oggetto neo4j.time.DateTime a un oggetto datetime
+    
     dt = datetime(
         neo4j_dt.year, 
         neo4j_dt.month, 
@@ -145,10 +144,10 @@ def neo4j_datetime_to_string(neo4j_dt):
         neo4j_dt.hour, 
         neo4j_dt.minute, 
         neo4j_dt.second, 
-        neo4j_dt.nanosecond // 1000,  # microseconds
+        neo4j_dt.nanosecond // 1000,  
         tzinfo=neo4j_dt.tzinfo
     )
-    # Format the datetime object
+    
     return dt.strftime("%Y-%m-%d %H:%M")
      
 def find_form_person_date(session):
@@ -205,21 +204,77 @@ def find_form_person_date(session):
 
 
 def find_fomr_IDcella_date(session):
+    def trova_relazioni_sim_cella(session, cella_nome, start_datetime, end_datetime):
+        result = session.run(
+        "MATCH (c:Cella {nome: $cella_nome})<-[r:CONNECTED_TO]-(s:Sim)<-[:OWNS]-(p:Persona) "
+        "WHERE datetime(r.start) >= datetime($start) AND datetime(r.end) <= datetime($end) "
+        "RETURN s.numero AS simNumero, r.start AS start, r.end AS end, c.nome AS cellaNome, p.nome AS personaNome, p.cognome AS personaCognome",
+            cella_nome=cella_nome,
+            start=start_datetime,
+            end=end_datetime
+    )
+        
+        relazioni = []
+        for record in result:
+            relazioni.append({
+                "simNumero": record["simNumero"],
+                "start": neo4j_datetime_to_string(record["start"]),
+                "end": neo4j_datetime_to_string(record["end"]),
+                "cellaNome": record["cellaNome"],
+                "personaNome": record["personaNome"],
+                "personaCognome": record["personaCognome"]
+            })
+        start_datetime = format_date(start_datetime)
+        end_datetime = format_date(end_datetime)  
+        if relazioni:
+            print(f"Connessioni trovate per la cella con Nome {cella_nome} nell'intervallo {start_datetime} - {end_datetime}:")
+            for relazione in relazioni:
+                print(f"SIM: {relazione['simNumero']}, Nome: {relazione['personaNome'].capitalize()}  {relazione['personaCognome'].capitalize()}, Start: {relazione['start']}, End: {relazione['end']}, Cella: {relazione['cellaNome']}")
+        else:
+            print(f"Nessuna relazione trovata per la cella con Nome {cella_nome} nell'intervallo {start_datetime} - {end_datetime}.")
+
+    
     def print_celle(session):
         result = session.run(
             "MATCH (c:Cella) "
-            "RETURN ID(c) AS cella_id, c.nome AS cella_nome"
+            "RETURN  c.nome AS cella_nome"
         )
         for record in result:
-            print(f"ID: {record['cella_id']}, Nome: {record['cella_nome']}")
-    print_celle(session)
-    
-            
+            print(f"Nome: {record['cella_nome']}")
+    while True:
+       
+        print_celle(session)
+        nome = str(input("Inserisci il nome: ")).lower().strip()
+        
+        print("inserci l'intervallo di date")
+        start_date = input("Data iniziale (yyyy-mm-dd): ")
+        start_hour = input("Ora (HH:MM): ")
+        end_date = input("Data di fine (yyyy-mm-dd): ")
+        end_hour = input("Ora (HH:MM): ")
+        start_datetime_str = f"{start_date}T{start_hour}:00Z"
+        end_datetime_str = f"{end_date}T{end_hour}:00Z"
+        
+        try:
+            trova_relazioni_sim_cella(session, nome, start_datetime_str, end_datetime_str)
+            scelta = int(input("1: Continua le ricerche\n0: Torna al menù\nScelta "))
+            match scelta:
+                case 1: 
+                    pass
+                case 0: 
+                    break
+                case _:
+                    print("scela non valida")
+        except Exception as e:
+            print(e)
+            print("Errore nell'iserimento")
+            time.sleep(1)
+        
 if __name__ == '__main__':
     driver = create_connection()
 
     session = driver.session()
    
     main_menu(session)
+    
     
    
