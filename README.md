@@ -16,20 +16,19 @@ Progetto per esame Neo4j
 
 ---
 
-TUTTA LA PARTE SOTTO E' DA MODIFICARE.
+Neo4j Project è un applicazione che consente di controllare se uno dei telefoni di proprietà di una persona si è collegato ad una cella. <br>
+Con Neo4j Project, è possibile: <b>
 
-Neo4j Project è un applicazione che consente l'acquisto di biglietti per concerti. <br>
-Con MongoDB Project, è possibile: <b>
+- Localizzare una persona sospetta: 
+   -
+   - [LV1] Con una data, un orario e una persona, elencare le celle telefoniche alle quali le SIM intestate a quella persona erano collegate.
 
+- Trovare sospetti in una zona di reato, in particolare:
+   - 
+   - [Lv2] Con una data, un orario ed una cella, elencare le persone intestatarie selle SIM collegate a quella cella in quel momento
+   Cercare concerti per intervallo di date
+   - [Lv3] Date delle coordinate geografiche, una data e un orario elencare le persone intestatarie delle SIM collegate alle celle che si trovano in un certo raggio dalle coordinate date
 
-- Registrarsi ed effettuare il login
-- Cercare concerti per nome dell'artista
-- Cercare concerti per il nome dello spettacolo
-- Cercare concerti per intervallo di date
-- Cercare concerti in base alla distanza dalla tua abitazione
-- Visualizzare tutti i concerti
-- Acquistare i biglietti per i concerti
-- Menu per vedere i biglietti acquistati
 
 </b>
 
@@ -38,28 +37,26 @@ Con MongoDB Project, è possibile: <b>
 Per avviare l'applicazione, è necessario/preferibile avere:
 
 - **Python v.3.12**
-- **Docker Desktop** *(In caso non si utilizzi MongoDB Compass)*
-- **Un Database MongoDB Compass** *(In caso non si usi Docker)*
+- **Docker Desktop** *(In caso non si utilizzi Neo4j Aura o Neo4j Desktop)*
+- **Un Database su Neo4j** *(In caso non si usi Docker)*
   
 - Le seguenti librerie Python:
-  - `pymongo`
-  - `regex`
-  - `colorama`
-  - `os`
-  - `time`
+  - `neo4j`
+  - `json`
+  - `random`
   - `datetime`
-  - `geopy`
+  - `os`
 
-## Installazione e configurazione MongoDB:
+## Installazione e configurazione Neo4j:
 
 
-### 1. Clona il repository di MongoDB Project:
+### 1. Clona il repository di Neo4j Project:
 
    - Apri il terminale e vai nella directory dove vuoi clonare il repository tramite `cd 'yo/ur/path'`
    - Esegui il seguente comando:
      
      ```sh
-     git clone https://github.com/TongoPatongo/mongoDB_project
+     git clone https://github.com/SpaceAndrea/Neo4j_Progetto_Finale
      ```
 
 ### 2. Installazione di Python 3.12
@@ -74,7 +71,7 @@ Per avviare l'applicazione, è necessario/preferibile avere:
 
 ### 3. Installazione di Docker Desktop
 
-*Solo nel caso si voglia runnare MongoDB in locale*
+*Solo nel caso si voglia runnare Neo4j in locale*
 
 1. **Scarica Docker Desktop**:
    - Clicca su questo link: [docker.com](https://www.docker.com/products/docker-desktop)
@@ -84,13 +81,13 @@ Per avviare l'applicazione, è necessario/preferibile avere:
    - Apri il terminale.
    - Digita `docker --version` per assicurarti che Docker sia installato correttamente.
 
-### 4. Installazione di MongoDB Compass
+### 4. Aprire Neo4j Aura sul browser
 
-*Opzionale, programma utile per runnare test sui database*
+*Opzionale, utile per vedere i vari nodi all'interno del database*
 
-1. **Scarica MongoDB Compass**:
-   - Clicca su questo link: [MongoDB Compass](https://www.mongodb.com/products/tools/compass)
-   - Scarica MongoDB Compass per il tuo sistema operativo ed installalo.
+1. **Andare sul sito di Neo4j Aura o scaricare la versione Desktop**:
+   - Clicca su questo link: [Neo4j Aura](https://neo4j.com/cloud/platform/aura-graph-database/)
+   - Alternativamente, è possibile scaricare Neo4j Desktop sul proprio dispositivo.
 
 2. **Effettuare il login**
    - Utilizzare le credenziali leggibili nel main per connettersi al database.
@@ -109,11 +106,11 @@ Per avviare l'applicazione, è necessario/preferibile avere:
 3. **Installa le librerie mancanti**:
    - Esegui il seguente comando per installare le librerie mancanti:
      ```sh
-     pip install pymongo regex colorama
+     pip install neo4j json random datetime
      ```
 
 ### Conclusione
 
-Ora dovresti avere tutto il necessario per eseguire MongoDB sul tuo dispositivo.
+Ora dovresti avere tutto il necessario per eseguire Neo4j sul tuo dispositivo.
 
 ---

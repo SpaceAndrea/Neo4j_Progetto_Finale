@@ -168,6 +168,25 @@ q. Esci
                 print("\nNessun riscontro trovato.")
 
         elif scelta == 3:
-            pass
+            longitudine = input("Inserire la longitudine: ").strip()
+            latitudine = input("Inserire la latitudine: ").strip()
+
+            result = session.run(
+                """
+                WITH point({latitude: $latitudine, longitude: $longitudine}) AS myLocation
+                MATCH (c:Cella)
+                WHERE c.location IS NOT NULL
+                RETURN c, point.distance(c.location, myLocation) AS dist
+                ORDER BY dist ASC
+                LIMIT 1
+                """,
+                longitudine=float(longitudine), latitudine=float(latitudine)
+            )
+
+            for record in result:
+                cella = record["c"]
+                distanza = record["dist"]
+                print(distanza)
+                # print(f"Closest place: {cella['id']}, Distance: {distanza}")
 
         input('\nPremi invio per continuare...')
