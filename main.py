@@ -1,6 +1,5 @@
 import os
 from neo4j import GraphDatabase
-import json
 from generators import CreateDataBase
 
 
