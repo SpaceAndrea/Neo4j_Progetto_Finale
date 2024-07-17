@@ -154,6 +154,7 @@ if __name__ == '__main__':
     URI = "neo4j+s://91e10090.databases.neo4j.io:7687"
     USERNAME = 'neo4j'
     PASSWORD = "tjZTPh4DaLFy84_W2RoSM1F_EW9RaGOBJ-SefdLUgrs"
+
     try:
         driver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
         driver.verify_connectivity()  
