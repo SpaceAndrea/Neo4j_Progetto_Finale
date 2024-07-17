@@ -65,7 +65,7 @@ def find_form_person_date(session):
         if sim is None:
             print("\nNessuna SIM trovata, riprovare.")
         else:
-            print("inserci l'intervallo di date")
+            print("inserisci l'intervallo di date")
             start_date = input("Data iniziale (yyyy-mm-dd): ")
             start_hour = input("Ora (HH:MM): ")
             end_date = input("Data di fine (yyyy-mm-dd): ")
@@ -81,7 +81,7 @@ def find_form_person_date(session):
                     case 0: 
                         break
                     case _:
-                        print("scela non valida")
+                        print("scelta non valida")
             except Exception as e:
                 print("Errore nell'iserimento")
                 time.sleep(1) 
@@ -129,7 +129,7 @@ def find_fomr_IDcella_date(session):
         print_celle(session)
         nome = str(input("Inserisci il nome: ")).lower().strip()
         
-        print("inserci l'intervallo di date")
+        print("inserisci l'intervallo di date")
         start_date = input("Data iniziale (yyyy-mm-dd): ")
         start_hour = input("Ora (HH:MM): ")
         end_date = input("Data di fine (yyyy-mm-dd): ")
@@ -146,8 +146,66 @@ def find_fomr_IDcella_date(session):
                 case 0: 
                     break
                 case _:
-                    print("scela non valida")
+                    print("scelta non valida")
         except Exception as e:
             print(e)
             print("Errore nell'iserimento")
-            time.sleep(1)        
+            time.sleep(1) 
+
+
+def find_people_near_location(session):
+    def print_location(session):
+        result = session.run(
+            "MATCH (c:Cella) "
+            "RETURN  c.nome AS cella_nome, c.location AS cella_location"
+        )
+        for record in result:
+            print(f"Nome: {record['cella_nome']} - {record['cella_location']}")
+    print_location(session)
+    luogo = input('A quale luogo sei interessato? (formato: longitudine,latitudine): ').strip()
+    try:
+        lon, lat = map(float, luogo.split(','))
+    except ValueError:
+        print("Formato non valido. Utilizza il formato: longitudine,latitudine (es. 9.1900,45.4642)")
+        return
+
+    print("inserisci l'intervallo di date")
+    start_date = input("Data iniziale (yyyy-mm-dd): ")
+    start_hour = input("Ora (HH:MM): ")
+    end_date = input("Data di fine (yyyy-mm-dd): ")
+    end_hour = input("Ora (HH:MM): ")
+    start_datetime_str = f"{start_date}T{start_hour}:00Z"
+    end_datetime_str = f"{end_date}T{end_hour}:00Z"
+
+    raggio = 10000  # Raggio fisso di 10 km
+    try:
+        result = session.run(
+            """
+            MATCH (c:Cella)
+            WHERE point.distance(c.location, point({latitude: $lat, longitude: $lon})) <= $raggio
+            WITH c
+            MATCH (p:Persona)-[:OWNS]->(s:Sim)-[r:CONNECTED_TO]->(c)
+            WHERE datetime(r.start) >= datetime($start) AND datetime(r.end) <= datetime($end)
+            RETURN p.nome AS nome, p.cognome AS cognome, s.numero AS numero
+            """,
+            lat=lat, lon=lon, raggio=raggio, start=start_datetime_str, end=end_datetime_str
+        )
+        
+        persone = []
+        for record in result:
+            persone.append({
+                "nome": record["nome"],
+                "cognome": record["cognome"],
+                "numero": record["numero"]
+            })
+
+        if persone:
+            print("\nPersone trovate:")
+            for persona in persone:
+                print(f"{persona['nome']} {persona['cognome']} (numero: {persona['numero']})")
+        else:
+            print("\nNessun riscontro trovato.")
+    except Exception as e:
+        print(f"Errore durante l'esecuzione della query: {e}")
+
+    input("\nPremi invio per continuare...")       
