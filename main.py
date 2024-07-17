@@ -87,31 +87,4 @@ q. Esci
             case 2:
                 rc.find_fomr_IDcella_date(session)
             case 3:
-                pass
-        
-                
-        
-
-        # elif scelta == 3:
-        #     longitudine = input("Inserire la longitudine: ").strip()
-        #     latitudine = input("Inserire la latitudine: ").strip()
-
-        #     result = session.run(
-        #         """
-        #         WITH point({latitude: $latitudine, longitude: $longitudine}) AS myLocation
-        #         MATCH (c:Cella)
-        #         WHERE c.location IS NOT NULL
-        #         RETURN c, point.distance(c.location, myLocation) AS dist
-        #         ORDER BY dist ASC
-        #         LIMIT 1
-        #         """,
-        #         longitudine=float(longitudine), latitudine=float(latitudine)
-        #     )
-
-        #     for record in result:
-        #         cella = record["c"]
-        #         distanza = record["dist"]
-        #         print(distanza)
-        #         # print(f"Closest place: {cella['id']}, Distance: {distanza}")
-
-        # input('\nPremi invio per continuare...')
+                rc.find_people_near_location(session)
