@@ -54,7 +54,8 @@ def find_form_person_date(session):
         else:
             print(f"Nessuna relazione trovata per le SIM di {nome} {cognome} nell'intervallo {start_datetime} - {end_datetime}.")
             
-    while True:       
+    while True:  
+        os.system('cls' if os.name == 'nt' else 'clear')     
         nome = input("Inserici nome: ").lower().strip()
         cognome = input("Inserici cognome:").lower().strip()
         result = session.run(
@@ -64,6 +65,7 @@ def find_form_person_date(session):
         sim = result.single()
         if sim is None:
             print("\nNessuna SIM trovata, riprovare.")
+            break
         else:
             print("inserisci l'intervallo di date")
             start_date = input("Data iniziale (yyyy-mm-dd): ")
@@ -73,6 +75,7 @@ def find_form_person_date(session):
             start_datetime_str = f"{start_date}T{start_hour}:00Z"
             end_datetime_str = f"{end_date}T{end_hour}:00Z"
             try:
+                os.system('cls' if os.name == 'nt' else 'clear')
                 trova_relazioni_sim_cella(session, nome, cognome, start_datetime_str, end_datetime_str)
                 scelta = int(input("1: Continua le ricerche\n0: Torna al menù\nScelta "))
                 match scelta:
@@ -125,7 +128,7 @@ def find_fomr_IDcella_date(session):
         for record in result:
             print(f"Nome: {record['cella_nome']}")
     while True:
-       
+        os.system('cls' if os.name == 'nt' else 'clear')
         print_celle(session)
         nome = str(input("Inserisci il nome: ")).lower().strip()
         
@@ -138,6 +141,7 @@ def find_fomr_IDcella_date(session):
         end_datetime_str = f"{end_date}T{end_hour}:00Z"
         
         try:
+            os.system('cls' if os.name == 'nt' else 'clear')
             trova_relazioni_sim_cella(session, nome, start_datetime_str, end_datetime_str)
             scelta = int(input("1: Continua le ricerche\n0: Torna al menù\nScelta "))
             match scelta:
@@ -161,6 +165,7 @@ def find_people_near_location(session):
         )
         for record in result:
             print(f"Nome: {record['cella_nome']} - {record['cella_location']}")
+    os.system('cls' if os.name == 'nt' else 'clear')        
     print_location(session)
     luogo = input('A quale luogo sei interessato? (formato: longitudine,latitudine): ').strip()
     try:
@@ -177,7 +182,7 @@ def find_people_near_location(session):
     start_datetime_str = f"{start_date}T{start_hour}:00Z"
     end_datetime_str = f"{end_date}T{end_hour}:00Z"
 
-    raggio = 10000  # Raggio fisso di 10 km
+    raggio = int(input("Inserisci il raggio (Km): "))*1000
     try:
         result = session.run(
             """
@@ -186,7 +191,7 @@ def find_people_near_location(session):
             WITH c
             MATCH (p:Persona)-[:OWNS]->(s:Sim)-[r:CONNECTED_TO]->(c)
             WHERE datetime(r.start) >= datetime($start) AND datetime(r.end) <= datetime($end)
-            RETURN p.nome AS nome, p.cognome AS cognome, s.numero AS numero
+            RETURN p.nome AS nome, p.cognome AS cognome, s.numero AS numero 
             """,
             lat=lat, lon=lon, raggio=raggio, start=start_datetime_str, end=end_datetime_str
         )
@@ -200,6 +205,7 @@ def find_people_near_location(session):
             })
 
         if persone:
+            os.system('cls' if os.name == 'nt' else 'clear')
             print("\nPersone trovate:")
             for persona in persone:
                 print(f"{persona['nome']} {persona['cognome']} (numero: {persona['numero']})")

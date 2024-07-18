@@ -3,14 +3,16 @@ from neo4j import GraphDatabase
 from generators import CreateDataBase
 import ricerche as rc
 
-def carica_dati_iniziali(session, file_path):
+def carica_dati_iniziali(session):
     ## idealmente potremmo realizzare un file con tutti i dati
     # Dato che il file è stato creato (tramite il modulo raccolta_dati.py)
     # leggo quei dati dal file json
     createDB = CreateDataBase()
 
     ## pulisce il database
-    session.run("MATCH (n) DETACH DELETE n")
+    session.run("""
+                MATCH ()-[r]->()DELETE r
+                MATCH (n) DETACH DELETE n""")
 
     try:
         createDB.crea_celle(session)
@@ -45,12 +47,11 @@ def create_connection():
         print('Impossibile effetturare la connessione, riprovare')
 
 if __name__ == '__main__':
-    # createDB = CreateDataBase()
     driver = create_connection() 
 
     ## carica i dati iniziali
     session = driver.session()
-    # carica_dati_iniziali(session, 'dati_persona.json')
+    # carica_dati_iniziali(session)
 
     while True:
         ## pulisce il terminale
